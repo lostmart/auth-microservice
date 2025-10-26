@@ -1,10 +1,21 @@
-import express from "express"
+import dotenv from "dotenv"
+dotenv.config()
 
-const app = express()
 const PORT = process.env.PORT || 3000
+import app from "./app"
+import { version } from "os"
+
+// Health check route
+app.get("/health", (req, res) => {
+	res.json({ status: "ok", timestamp: new Date().toISOString() })
+})
 
 app.get("/", (req, res) => {
-	res.json({ message: "Hello, World!" })
+	res.json({
+		message: "Welcome to the Auth Microservice",
+		author: "Martin P",
+		version: "1.0.0",
+	})
 })
 
 app.listen(PORT, () => {
