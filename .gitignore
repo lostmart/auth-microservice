@@ -1,0 +1,39 @@
+node_modules/
+dist/
+.env
+.DS_Store
+.vscode/
+coverage/
+npm-debug.log*
+yarn-error.log*
+.idea/
+*.log
+*.swp
+*.swo   
+
+# MacOS specific files
+.AppleDouble
+.LSOverride 
+
+# Thumbnails
+._*Thumbs.db
+Thumbs.db
+
+# Windows specific files
+ehthumbs.db
+Desktop.ini 
+$RECYCLE.BIN/
+# Linux specific files
+
+# database files
+*.sqlite
+*.db    
+*.sql
+*.sqlite3
+
+# Compiled source #
+*.com
+*.class
+*.dll
+*.exe
+*.o
