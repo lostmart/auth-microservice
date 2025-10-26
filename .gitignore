@@ -25,6 +25,8 @@ Desktop.ini
 $RECYCLE.BIN/
 # Linux specific files
 
+data/*
+
 # database files
 *.sqlite
 *.db    
