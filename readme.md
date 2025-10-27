@@ -43,3 +43,24 @@ src/
 15. **.gitignore**: Ignored files.
 16. **tsconfig.json**: TypeScript configuration.
 17. **package.json**: Project metadata.
+
+## Demo Credentials
+
+This is a demo authentication microservice. You can test with these accounts:
+
+**Admin Access:**
+
+- Email: `admin@parisclassictours.fr`
+- Password: `admin123`
+
+**Driver Access:**
+
+- Email: `pierre.martin@parisclassictours.fr`
+- Password: `driver123`
+
+**Customer Access:**
+
+- Email: `marie.lefevre@email.fr`
+- Password: `customer123`
+
+> Note: This is a demonstration project. Passwords are intentionally simple for testing purposes.

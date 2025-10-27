@@ -2,18 +2,18 @@ import { NextFunction, Request, Response, RequestHandler } from "express"
 
 // Middleware to check API key in request headers
 export const apiKeyValidator: RequestHandler = (
-    req: Request,
-    res: Response,
-    next: NextFunction
+	req: Request,
+	res: Response,
+	next: NextFunction
 ) => {
-    const apiKey = req.headers["x-api-key"]
-    const validApiKey = process.env.API_KEY
+	const apiKey = req.headers["x-api-key"]
+	const validApiKey = process.env.API_KEY
 
-    if (apiKey && apiKey === validApiKey) {
-        next()
-    } else {
-        res.status(403).json({ message: "Forbidden: Invalid API Key" })
-    }
+	if (apiKey && apiKey === validApiKey) {
+		next()
+	} else {
+		res.status(403).json({ message: "Forbidden: Invalid API Key" })
+	}
 }
 
 // Middleware to log request details
@@ -22,7 +22,12 @@ export const requestLogger: RequestHandler = (
 	res: Response,
 	next: NextFunction
 ) => {
-	console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`)
+	const timestamp = new Date().toISOString()
+	const method = req.method
+	const url = req.originalUrl
+	const ip = req.ip || req.socket.remoteAddress
+
+	console.log(`[${timestamp}] ${method} ${url} - IP: ${ip}`)
 	next()
 }
 
@@ -44,5 +49,26 @@ export const authenticateToken: RequestHandler = (
 		next()
 	} else {
 		return res.status(403).json({ message: "Invalid token" })
+	}
+}
+
+// Middleware to check user roles
+export const authorizeRoles = (...allowedRoles: string[]): RequestHandler => {
+	return (req: Request, res: Response, next: NextFunction) => {
+		const user = (req as any).user // We'll type this properly later
+
+		if (!user) {
+			return res.status(401).json({ message: "Authentication required" })
+		}
+
+		if (!allowedRoles.includes(user.role)) {
+			return res.status(403).json({
+				message: "Insufficient permissions",
+				required: allowedRoles,
+				current: user.role,
+			})
+		}
+
+		next()
 	}
 }

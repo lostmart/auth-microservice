@@ -3,8 +3,11 @@ import express from "express"
 import db from "./config/database"
 import { initDatabase } from "./config/initDatabase"
 
-// Initialize database tables
-initDatabase()
+// Initialize database (async)
+initDatabase().catch((err) => {
+	console.error("Failed to initialize database:", err)
+	process.exit(1)
+})
 
 const app = express()
 
