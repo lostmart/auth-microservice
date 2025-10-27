@@ -32,10 +32,10 @@ app.use(express.urlencoded({ extended: true })) // Parse URL-encoded bodies
 app.use(requestLogger) // Log all requests
 
 // Routes
-app.use("/api/v1/auth", authRoutes)
+app.use("/api/v1/auth", apiKeyValidator, authRoutes)
 
 // Health check route
-app.get("/api/v1/health", apiKeyValidator, (req, res) => {
+app.get("/api/v1/health", (req, res) => {
 	res.json({ status: "ok", timestamp: new Date().toISOString() })
 })
 

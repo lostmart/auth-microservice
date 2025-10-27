@@ -78,3 +78,42 @@ This is a demo authentication microservice. You can test with these accounts:
 - POST /api/v1/auth/register - Create new user
 - POST /api/v1/auth/login - Login user
 - GET /api/v1/health - Health check
+
+## ## Authentication Flow
+
+This is an authentication microservice designed for service-to-service communication.
+
+### API Key Authentication
+
+All endpoints require a valid API key in the request header:
+
+```
+X-API-Key: your-api-key-here
+```
+
+### Usage Example
+
+```bash
+# Login request
+curl -X POST http://localhost:3000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: your-api-key-here" \
+  -d '{"email": "admin@parisclassictours.fr", "password": "admin123"}'
+```
+
+### Design Rationale
+
+- API key protects the microservice from unauthorized access
+- Frontend/client services hold the API key
+- JWT tokens are issued to end users after login
+- Demonstrates proper microservice security patterns
+
+```
+
+## Testing Considerations
+
+When testing (Postman, curl, or frontend), you'll need to include **two headers**:
+```
+
+X-API-Key: <your-api-key-from-env>
+Authorization: Bearer <jwt-token-after-login>

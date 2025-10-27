@@ -25,8 +25,8 @@ const seedUsers: SeedUser[] = [
 	},
 	{
 		first_name: "Pierre",
-		last_name: "Martin",
-		email: "pierre.martin@parisclassictours.fr",
+		last_name: "Lambert",
+		email: "pierre.lambert@parisclassictours.fr",
 		password: "driver123",
 		phone: "+33 6 12 34 56 78",
 		role: "driver",

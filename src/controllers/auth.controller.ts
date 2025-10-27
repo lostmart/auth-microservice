@@ -7,6 +7,11 @@ const SALT_ROUNDS = 10
 
 // Register a new user
 export const register = async (req: Request, res: Response): Promise<void> => {
+	if (!req.body) {
+		res.status(400).json({ message: "There is no body !" })
+		return
+	}
+
 	try {
 		const { first_name, last_name, email, password, phone, role } = req.body
 
@@ -60,7 +65,6 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 			message: "User registered successfully",
 			token,
 			user: {
-				id: result.lastInsertRowid,
 				first_name,
 				last_name,
 				email,
@@ -75,6 +79,11 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
 // Login user
 export const login = async (req: Request, res: Response): Promise<void> => {
+	if (!req.body) {
+		res.status(400).json({ message: "There is no body !" })
+		return
+	}
+
 	try {
 		const { email, password } = req.body
 
@@ -120,16 +129,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 		res.status(200).json({
 			message: "Login successful",
 			token,
-			user: {
-				id: user.id,
-				first_name: user.first_name,
-				last_name: user.last_name,
-				email: user.email,
-				role: user.role,
-			},
 		})
 	} catch (error) {
 		console.error("Login error:", error)
-		res.status(500).json({ message: "Internal server error" })
+		res.status(500).json({
+			message: "Internal server error",
+		})
 	}
 }
