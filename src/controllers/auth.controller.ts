@@ -2,6 +2,8 @@ import { Request, Response } from "express"
 import db from "../config/database"
 import bcrypt from "bcrypt"
 import { generateToken } from "../utils/jwt.util"
+import { AuthService } from "../services/auth.service"
+import { AuthenticatedRequest } from "../types/express"
 
 const SALT_ROUNDS = 10
 
@@ -93,47 +95,87 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 			return
 		}
 
-		// Find user by email
-		const user = db
-			.prepare(
-				"SELECT id, first_name, last_name, email, password_hash, role, is_active FROM users WHERE email = ?"
-			)
-			.get(email) as any
-
-		if (!user) {
-			res.status(401).json({ message: "Invalid email or password" })
-			return
-		}
-
-		// Check if account is active
-		if (!user.is_active) {
-			res.status(403).json({ message: "Account is disabled" })
-			return
-		}
-
-		// Verify password
-		const isValidPassword = await bcrypt.compare(password, user.password_hash)
-
-		if (!isValidPassword) {
-			res.status(401).json({ message: "Invalid email or password" })
-			return
-		}
-
-		// Generate JWT token
-		const token = generateToken({
-			id: user.id,
-			email: user.email,
-			role: user.role,
-		})
+		// Call service
+		const result = await AuthService.login({ email, password })
 
 		res.status(200).json({
 			message: "Login successful",
-			token,
+			...result,
 		})
-	} catch (error) {
+	} catch (error: any) {
+		if (
+			error.message === "Invalid email or password" ||
+			error.message === "Account is disabled"
+		) {
+			res.status(401).json({ message: error.message })
+			return
+		}
+
 		console.error("Login error:", error)
-		res.status(500).json({
-			message: "Internal server error",
+		res.status(500).json({ message: "Internal server error" })
+	}
+}
+
+export const getMe = async (req: Request, res: Response): Promise<void> => {
+	try {
+		const authReq = req as AuthenticatedRequest
+		const userId = authReq.user?.id
+
+		if (!userId) {
+			res.status(401).json({ message: "Unauthorized" })
+			return
+		}
+
+		const user = AuthService.getUserProfile(userId)
+
+		res.status(200).json({ user })
+	} catch (error: any) {
+		console.error("Get profile error:", error)
+
+		if (error.message === "User not found") {
+			res.status(404).json({ message: error.message })
+			return
+		}
+
+		res.status(500).json({ message: "Internal server error" })
+	}
+}
+
+// Update current user profile
+export const updateProfile = async (
+	req: Request,
+	res: Response
+): Promise<void> => {
+	try {
+		const authReq = req as AuthenticatedRequest
+		const userId = authReq.user?.id
+
+		if (!userId) {
+			res.status(401).json({ message: "Unauthorized" })
+			return
+		}
+
+		const { first_name, last_name, phone, password } = req.body
+
+		const updatedUser = await AuthService.updateProfile(userId, {
+			first_name,
+			last_name,
+			phone,
+			password,
 		})
+
+		res.status(200).json({
+			message: "Profile updated successfully",
+			user: updatedUser,
+		})
+	} catch (error: any) {
+		console.error("Update profile error:", error)
+
+		if (error.message === "User not found") {
+			res.status(404).json({ message: error.message })
+			return
+		}
+
+		res.status(500).json({ message: "Internal server error" })
 	}
 }

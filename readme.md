@@ -108,23 +108,39 @@ curl -X POST http://localhost:3000/api/v1/auth/login \
 - JWT tokens are issued to end users after login
 - Demonstrates proper microservice security patterns
 
-```
-
 ## Testing Considerations
 
 When testing (Postman, curl, or frontend), you'll need to include **two headers**:
-```
 
+```text
 X-API-Key: <your-api-key-from-env>
 Authorization: Bearer <jwt-token-after-login>
+```
 
 ## Layered architecture
 
 ```UML
-Controller → Service → Model/Repository → Database
+Request → Controller (HTTP) → Service (Logic) → Model (DB) → Database
 ```
 
 1. Controller - Handles HTTP (request/response)
 2. Service - Business logic (validation, orchestration)
 3. Model/Repository - Database operations only
 4. Database - SQLite connection
+
+## API Summary
+
+Public (API key only):
+
+POST /api/v1/auth/register - Register new user
+POST /api/v1/auth/login - Login user
+GET /api/v1/health - Health check (no auth)
+
+Protected (API key + JWT):
+
+GET /api/v1/auth/me - Get current user profile
+PUT /api/v1/auth/profile - Update own profile
+
+Admin only (API key + JWT + admin role):
+
+GET /api/v1/users - List all users
