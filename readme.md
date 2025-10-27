@@ -117,3 +117,14 @@ When testing (Postman, curl, or frontend), you'll need to include **two headers*
 
 X-API-Key: <your-api-key-from-env>
 Authorization: Bearer <jwt-token-after-login>
+
+## Layered architecture
+
+```UML
+Controller → Service → Model/Repository → Database
+```
+
+1. Controller - Handles HTTP (request/response)
+2. Service - Business logic (validation, orchestration)
+3. Model/Repository - Database operations only
+4. Database - SQLite connection
