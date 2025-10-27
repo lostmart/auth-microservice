@@ -64,3 +64,17 @@ This is a demo authentication microservice. You can test with these accounts:
 - Password: `customer123`
 
 > Note: This is a demonstration project. Passwords are intentionally simple for testing purposes.
+
+## Endpoints
+
+```text
+| Endpoint | Method | Description |
+| ------- | ------ | ----------- |
+| /api/v1/auth/register | POST | Create new user |
+| /api/v1/auth/login | POST | Login user |
+| /api/v1/health | GET | Health check |
+```
+
+- POST /api/v1/auth/register - Create new user
+- POST /api/v1/auth/login - Login user
+- GET /api/v1/health - Health check
