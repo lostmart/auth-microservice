@@ -2,43 +2,13 @@ import bcrypt from "bcrypt"
 import { generateToken } from "../utils/jwt.util"
 import { User, CreateUserData } from "../types/user.interface"
 import { UserModel } from "../models/user.model"
+import {
+	LoginInput,
+	RegisterInput,
+	UpdateProfileInput,
+} from "../types/input.interface"
 
 const SALT_ROUNDS = 10
-
-export interface RegisterInput {
-	first_name: string
-	last_name: string
-	email: string
-	password: string
-	phone?: string
-	role?: string
-}
-
-export interface LoginInput {
-	email: string
-	password: string
-}
-
-export interface RegisterInput {
-	first_name: string
-	last_name: string
-	email: string
-	password: string
-	phone?: string
-	role?: string
-}
-
-export interface LoginInput {
-	email: string
-	password: string
-}
-
-export interface UpdateProfileInput {
-	first_name?: string
-	last_name?: string
-	phone?: string
-	password?: string
-}
 
 export class AuthService {
 	// Register a new user
