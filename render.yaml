@@ -1,14 +1,16 @@
 services:
   - type: web
     name: auth-microservice
-    env: docker
+    env: node
     plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
     healthCheckPath: /api/v1/health
     envVars:
       - key: PORT
         value: 10000
       - key: NODE_ENV
-        value: staging
+        value: production
       - key: DATABASE_PATH
         value: /tmp/demo.db
       - key: SEED_DATABASE
