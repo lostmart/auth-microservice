@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  auth-microservice:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - API_KEY=demo-api-key-change-in-production
+      - JWT_SECRET=demo-jwt-secret-change-in-production
+      - JWT_EXPIRES_IN=24h
+      - DATABASE_PATH=/app/data/demo.db
+      - SEED_DATABASE=true
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
