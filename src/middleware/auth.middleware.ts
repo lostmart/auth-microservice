@@ -1,4 +1,14 @@
 import { NextFunction, Request, Response, RequestHandler } from "express"
+import { verifyToken } from "../utils/jwt.util"
+
+// Extend Request type to include user
+interface AuthenticatedRequest extends Request {
+	user?: {
+		id: number
+		email: string
+		role: string
+	}
+}
 
 // Middleware to check API key in request headers
 export const apiKeyValidator: RequestHandler = (
@@ -31,31 +41,36 @@ export const requestLogger: RequestHandler = (
 	next()
 }
 
-// Middleware to check for a valid authentication token
+// Middleware to check for a valid JWT token
 export const authenticateToken: RequestHandler = (
 	req: Request,
 	res: Response,
 	next: NextFunction
 ) => {
 	const authHeader = req.headers["authorization"]
-	const token = authHeader && authHeader.split(" ")[1]
+	const token = authHeader && authHeader.split(" ")[1] // Format: "Bearer TOKEN"
 
-	if (token == null) {
+	if (!token) {
 		return res.status(401).json({ message: "No token provided" })
 	}
 
-	// Placeholder logic for token verification
-	if (token === "fake-jwt-token") {
-		next()
-	} else {
-		return res.status(403).json({ message: "Invalid token" })
+	// Verify the token using our JWT utility
+	const decoded = verifyToken(token)
+
+	if (!decoded) {
+		return res.status(403).json({ message: "Invalid or expired token" })
 	}
+
+	// Attach user info to request for use in route handlers
+	;(req as AuthenticatedRequest).user = decoded
+
+	next()
 }
 
 // Middleware to check user roles
 export const authorizeRoles = (...allowedRoles: string[]): RequestHandler => {
 	return (req: Request, res: Response, next: NextFunction) => {
-		const user = (req as any).user // We'll type this properly later
+		const user = (req as AuthenticatedRequest).user
 
 		if (!user) {
 			return res.status(401).json({ message: "Authentication required" })
