@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt"
-import { UserModel, CreateUserData, User } from "../models/user.model"
 import { generateToken } from "../utils/jwt.util"
+import { User, CreateUserData } from "../types/user.interface"
+import { UserModel } from "../models/user.model"
 
 const SALT_ROUNDS = 10
 
@@ -76,6 +77,7 @@ export class AuthService {
 			email: user.email,
 			role: user.role,
 		})
+		// TODO: don't send the whole user !
 
 		return {
 			token,
@@ -111,6 +113,8 @@ export class AuthService {
 			email: user.email,
 			role: user.role,
 		})
+
+		// TODO: don't send the whole user !
 
 		return {
 			token,

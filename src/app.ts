@@ -3,6 +3,7 @@ import express from "express"
 import db from "./config/database"
 import { initDatabase } from "./config/initDatabase"
 import authRoutes from "./routes/auth.routes"
+import userRoutes from "./routes/user.routes"
 
 // Initialize database (async)
 initDatabase().catch((err) => {
@@ -36,6 +37,7 @@ app.use(requestLogger) // Log all requests
 
 // Routes
 app.use("/api/v1/auth", apiKeyValidator, authRoutes)
+app.use("/api/v1/users", apiKeyValidator, userRoutes)
 
 // Health check route
 app.get("/api/v1/health", (req, res) => {

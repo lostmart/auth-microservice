@@ -1,11 +1,20 @@
-import express from "express"
-import { login, register } from "../controllers/auth.controller"
-const router = express.Router()
+import { Router } from "express"
+import {
+	register,
+	login,
+	getMe,
+	updateProfile,
+} from "../controllers/auth.controller"
+import { authenticateToken } from "../middleware/auth.middleware"
 
-// Example auth route: Login
+const router = Router()
+
+// Public routes (protected by API key at app level)
+router.post("/register", register)
 router.post("/login", login)
 
-// Example auth route: Register
-router.post("/register", register)
+// Protected routes (require JWT token)
+router.get("/me", authenticateToken, getMe)
+router.put("/profile", authenticateToken, updateProfile)
 
 export default router
