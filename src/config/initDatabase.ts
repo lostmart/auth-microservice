@@ -4,7 +4,7 @@ import { seedDatabase } from "./seed"
 export const initDatabase = async () => {
 	const createUsersTable = `
     CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id TEXT PRIMARY KEY,
       first_name TEXT NOT NULL,
       last_name TEXT NOT NULL,
       email TEXT NOT NULL UNIQUE,

@@ -4,7 +4,7 @@ import { verifyToken } from "../utils/jwt.util"
 // Extend Request type to include user
 interface AuthenticatedRequest extends Request {
 	user?: {
-		id: number
+		id: string
 		email: string
 		role: string
 	}

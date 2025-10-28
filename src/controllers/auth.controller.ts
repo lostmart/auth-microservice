@@ -1,19 +1,17 @@
 import { Request, Response } from "express"
-import db from "../config/database"
-import bcrypt from "bcrypt"
-import { generateToken } from "../utils/jwt.util"
 import { AuthService } from "../services/auth.service"
-import { AuthenticatedRequest } from "../types/express"
 
-const SALT_ROUNDS = 10
+// Extend Request to include user from JWT
+interface AuthenticatedRequest extends Request {
+	user?: {
+		id: string // Changed from number to string
+		email: string
+		role: string
+	}
+}
 
 // Register a new user
 export const register = async (req: Request, res: Response): Promise<void> => {
-	if (!req.body) {
-		res.status(400).json({ message: "There is no body !" })
-		return
-	}
-
 	try {
 		const { first_name, last_name, email, password, phone, role } = req.body
 
@@ -26,54 +24,26 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 			return
 		}
 
-		// Check if user already exists
-		const existingUser = db
-			.prepare("SELECT id FROM users WHERE email = ?")
-			.get(email)
-
-		if (existingUser) {
-			res.status(409).json({ message: "User with this email already exists" })
-			return
-		}
-
-		// Hash the password
-		const password_hash = await bcrypt.hash(password, SALT_ROUNDS)
-
-		// Insert new user
-		const result = db
-			.prepare(
-				`
-      INSERT INTO users (first_name, last_name, email, password_hash, phone, role)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `
-			)
-			.run(
-				first_name,
-				last_name,
-				email,
-				password_hash,
-				phone || null,
-				role || "customer"
-			)
-
-		// Generate JWT token
-		const token = generateToken({
-			id: result.lastInsertRowid as number,
+		// Call service
+		const result = await AuthService.register({
+			first_name,
+			last_name,
 			email,
-			role: role || "customer",
+			password,
+			phone,
+			role,
 		})
 
 		res.status(201).json({
 			message: "User registered successfully",
-			token,
-			user: {
-				first_name,
-				last_name,
-				email,
-				role: role || "customer",
-			},
+			...result,
 		})
-	} catch (error) {
+	} catch (error: any) {
+		if (error.message === "User with this email already exists") {
+			res.status(409).json({ message: error.message })
+			return
+		}
+
 		console.error("Registration error:", error)
 		res.status(500).json({ message: "Internal server error" })
 	}
@@ -81,11 +51,6 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
 // Login user
 export const login = async (req: Request, res: Response): Promise<void> => {
-	if (!req.body) {
-		res.status(400).json({ message: "There is no body !" })
-		return
-	}
-
 	try {
 		const { email, password } = req.body
 
@@ -116,6 +81,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 	}
 }
 
+// Get current user profile
 export const getMe = async (req: Request, res: Response): Promise<void> => {
 	try {
 		const authReq = req as AuthenticatedRequest

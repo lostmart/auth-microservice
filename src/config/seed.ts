@@ -1,7 +1,8 @@
 import db from "./database"
 import bcrypt from "bcrypt"
+import { ulid } from "ulid"
 
-const SALT_ROUNDS = 10 // Higher = more secure but slower
+const SALT_ROUNDS = 10
 
 interface SeedUser {
 	first_name: string
@@ -25,8 +26,8 @@ const seedUsers: SeedUser[] = [
 	},
 	{
 		first_name: "Pierre",
-		last_name: "Lambert",
-		email: "pierre.lambert@parisclassictours.fr",
+		last_name: "Martin",
+		email: "pierre.martin@parisclassictours.fr",
 		password: "driver123",
 		phone: "+33 6 12 34 56 78",
 		role: "driver",
@@ -47,7 +48,7 @@ const seedUsers: SeedUser[] = [
 		email: "jean.dupont@email.fr",
 		password: "customer123",
 		role: "customer",
-		is_verified: 0, // Unverified user example
+		is_verified: 0,
 	},
 	{
 		first_name: "Sophie",
@@ -63,27 +64,28 @@ const seedUsers: SeedUser[] = [
 export const seedDatabase = async () => {
 	console.log("Seeding database...")
 
-	// Check if users already exist
 	const existingUsers = db
 		.prepare("SELECT COUNT(*) as count FROM users")
-		.get() as { count: number }
+		.get() as {
+		count: number
+	}
 
 	if (existingUsers.count > 0) {
 		console.log("Database already seeded, skipping...")
 		return
 	}
 
-	// Prepare insert statement
 	const insertUser = db.prepare(`
-    INSERT INTO users (first_name, last_name, email, password_hash, phone, role, is_verified)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO users (id, first_name, last_name, email, password_hash, phone, role, is_verified)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `)
 
-	// Insert all users
 	for (const user of seedUsers) {
+		const id = ulid() // Generate ULID for each user
 		const hashedPassword = await bcrypt.hash(user.password, SALT_ROUNDS)
 
 		insertUser.run(
+			id,
 			user.first_name,
 			user.last_name,
 			user.email,
@@ -93,7 +95,7 @@ export const seedDatabase = async () => {
 			user.is_verified
 		)
 
-		console.log(`✓ Seeded user: ${user.email} (${user.role})`)
+		console.log(`✓ Seeded user: ${user.email} (${user.role}) - ID: ${id}`)
 	}
 
 	console.log("Database seeding completed!")

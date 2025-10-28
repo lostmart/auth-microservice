@@ -32,7 +32,7 @@ export class AuthService {
 			role: input.role || "customer",
 		}
 
-		// Save to database
+		// Save to database (returns ULID string)
 		const userId = UserModel.create(userData)
 
 		// Get created user
@@ -47,7 +47,6 @@ export class AuthService {
 			email: user.email,
 			role: user.role,
 		})
-		// TODO: don't send the whole user !
 
 		return {
 			token,
@@ -84,15 +83,15 @@ export class AuthService {
 			role: user.role,
 		})
 
-		// TODO: don't send the whole user !
-
 		return {
 			token,
 			user: UserModel.toPublic(user),
 		}
 	}
 
-	static getUserProfile(userId: number) {
+	// Get user profile by ID
+	static getUserProfile(userId: string) {
+		// Changed from number to string
 		const user = UserModel.findById(userId)
 		if (!user) {
 			throw new Error("User not found")
@@ -101,7 +100,8 @@ export class AuthService {
 	}
 
 	// Update user profile
-	static async updateProfile(userId: number, input: UpdateProfileInput) {
+	static async updateProfile(userId: string, input: UpdateProfileInput) {
+		// Changed from number to string
 		const user = UserModel.findById(userId)
 		if (!user) {
 			throw new Error("User not found")

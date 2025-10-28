@@ -1,8 +1,6 @@
 import db from "../config/database"
 import { CreateUserData, User, UserPublic } from "../types/user.interface"
-
-
-
+import { ulid } from "ulid"
 
 // Database operations for users
 export class UserModel {
@@ -14,14 +12,16 @@ export class UserModel {
 	}
 
 	// Find user by ID
-	static findById(id: number): User | undefined {
+	static findById(id: string): User | undefined {
 		return db.prepare("SELECT * FROM users WHERE id = ?").get(id) as
 			| User
 			| undefined
 	}
 
 	// Create a new user
-	static create(userData: CreateUserData): number {
+	static create(userData: CreateUserData): string {
+		const id = ulid() // Generate ULID first
+
 		const result = db
 			.prepare(
 				`
@@ -38,7 +38,7 @@ export class UserModel {
 				userData.role || "customer"
 			)
 
-		return result.lastInsertRowid as number
+		return id
 	}
 
 	// Get all users (for admin)
@@ -47,7 +47,7 @@ export class UserModel {
 	}
 
 	// Update user
-	static update(id: number, updates: Partial<User>): boolean {
+	static update(id: string, updates: Partial<User>): boolean {
 		const fields = Object.keys(updates)
 			.map((key) => `${key} = ?`)
 			.join(", ")
