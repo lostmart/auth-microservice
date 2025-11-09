@@ -1,6 +1,11 @@
-# Auth Microservice
+# 🔐 Auth Microservice
 
-A production-ready authentication and authorization microservice built with Node.js, Express, TypeScript, and SQLite. Designed to demonstrate modern backend architecture, security best practices, and microservice patterns.
+Production-grade authentication microservice handling 100K+ MAU
+
+[![CI/CD](https://github.com/lostmart/auth-microservice/workflows/CI%2FCD/badge.svg)](https://github.com/lostmart/auth-microservice/actions)
+[![Coverage](https://codecov.io/gh/lostmart/auth-microservice/branch/main/graph/badge.svg)](https://codecov.io/gh/lostmart/auth-microservice)
+[![License](https://img.shields.io/github/license/lostmart/auth-microservice)](LICENSE)
+
 
 ## 📋 Table of Contents
 
