@@ -1,6 +1,34 @@
 # Auth Microservice
 
-This microservice handles user authentication and authorization.
+A production-ready authentication and authorization microservice built with Node.js, Express, TypeScript, and SQLite. Designed to demonstrate modern backend architecture, security best practices, and microservice patterns.
+
+## 📋 Table of Contents
+
+1. [Features](#features)
+2. Architecture
+3. Tech Stack
+4. Getting Started
+5. API Documentation
+6. Authentication Flow
+7. Docker
+8. Demo Credentials
+9. Project Structure
+10. Environment Variables
+11. Design Decisions
+
+## ✨ Features
+
+- JWT Authentication - Secure token-based authentication with configurable expiration
+- Role-Based Authorization - Fine-grained access control (admin, driver, customer roles)
+- API Key Protection - Service-to-service authentication for microservice architecture
+- Password Security - bcrypt hashing with configurable salt rounds
+- ULID Identifiers - Sortable, globally unique IDs instead of sequential integers
+- TypeScript - Full type safety and enhanced developer experience
+- RESTful API - Clean, intuitive endpoint structure
+- Request Logging - Comprehensive request/response logging
+- Health Checks - Monitoring-ready health endpoint
+- Docker Support - Production-ready containerization
+- Database Seeding - Pre-populated demo data for testing
 
 ## Folder Structure
 
