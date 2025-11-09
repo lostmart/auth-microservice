@@ -39,3 +39,4 @@ data/*
 *.dll
 *.exe
 *.o
+/src/generated/prisma

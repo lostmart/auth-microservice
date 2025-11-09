@@ -1,15 +1,8 @@
+// src/app.ts
 import express from "express"
 import cors from "cors"
-import db from "./config/database"
-import { initDatabase } from "./config/initDatabase"
 import authRoutes from "./routes/auth.routes"
 import userRoutes from "./routes/user.routes"
-
-// Initialize database (async)
-initDatabase().catch((err) => {
-	console.error("Failed to initialize database:", err)
-	process.exit(1)
-})
 
 import {
 	apiKeyValidator,

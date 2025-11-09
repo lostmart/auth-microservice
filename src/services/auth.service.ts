@@ -1,45 +1,38 @@
-import bcrypt from "bcrypt"
+import userModel from "../models/user.model"
+import { hashPassword, comparePassword } from "../utils/password.util"
 import { generateToken } from "../utils/jwt.util"
-import { User, CreateUserData } from "../types/user.interface"
-import { UserModel } from "../models/user.model"
-import {
-	LoginInput,
-	RegisterInput,
-	UpdateProfileInput,
-} from "../types/input.interface"
 
-const SALT_ROUNDS = 10
 
 export class AuthService {
-	// Register a new user
-	static async register(input: RegisterInput) {
+	async register(input: {
+		email: string
+		password: string
+		first_name: string
+		last_name: string
+		phone?: string
+		role?: string
+	}) {
 		// Check if user exists
-		const existingUser = UserModel.findByEmail(input.email)
+		const existingUser = await userModel.findByEmail(input.email) // ← await + lowercase
 		if (existingUser) {
-			throw new Error("User with this email already exists")
+			throw new Error("User already exists")
 		}
 
 		// Hash password
-		const password_hash = await bcrypt.hash(input.password, SALT_ROUNDS)
+		const passwordHash = await hashPassword(input.password)
 
 		// Create user data
-		const userData: CreateUserData = {
-			first_name: input.first_name,
-			last_name: input.last_name,
+		const userData = {
+			firstName: input.first_name, // Convert snake_case to camelCase for Prisma
+			lastName: input.last_name,
 			email: input.email,
-			password_hash,
+			passwordHash: passwordHash,
 			phone: input.phone,
 			role: input.role || "customer",
 		}
 
-		// Save to database (returns ULID string)
-		const userId = UserModel.create(userData)
-
-		// Get created user
-		const user = UserModel.findById(userId)
-		if (!user) {
-			throw new Error("Failed to create user")
-		}
+		// Create user
+		const user = await userModel.create(userData) // ← await + lowercase
 
 		// Generate token
 		const token = generateToken({
@@ -50,30 +43,32 @@ export class AuthService {
 
 		return {
 			token,
-			user: UserModel.toPublic(user),
+			user: {
+				first_name: user.firstName, // Convert back to snake_case for API response
+				last_name: user.lastName,
+				email: user.email,
+				role: user.role,
+				phone: user.phone,
+				is_verified: user.isVerified ? 1 : 0,
+				created_at: user.createdAt.toISOString(),
+			},
 		}
 	}
 
-	// Login user
-	static async login(input: LoginInput) {
+	async login(input: { email: string; password: string }) {
 		// Find user
-		const user = UserModel.findByEmail(input.email)
+		const user = await userModel.findByEmail(input.email) // ← await + lowercase
 		if (!user) {
-			throw new Error("Invalid email or password")
-		}
-
-		// Check if active
-		if (!user.is_active) {
-			throw new Error("Account is disabled")
+			throw new Error("Invalid credentials")
 		}
 
 		// Verify password
-		const isValidPassword = await bcrypt.compare(
+		const isPasswordValid = await comparePassword(
 			input.password,
-			user.password_hash
+			user.passwordHash
 		)
-		if (!isValidPassword) {
-			throw new Error("Invalid email or password")
+		if (!isPasswordValid) {
+			throw new Error("Invalid credentials")
 		}
 
 		// Generate token
@@ -85,58 +80,80 @@ export class AuthService {
 
 		return {
 			token,
-			user: UserModel.toPublic(user),
+			user: {
+				first_name: user.firstName,
+				last_name: user.lastName,
+				email: user.email,
+				role: user.role,
+				phone: user.phone,
+				is_verified: user.isVerified ? 1 : 0,
+				created_at: user.createdAt.toISOString(),
+			},
 		}
 	}
 
-	// Get user profile by ID
-	static getUserProfile(userId: string) {
-		// Changed from number to string
-		const user = UserModel.findById(userId)
-		if (!user) {
-			throw new Error("User not found")
-		}
-		return UserModel.toPublic(user)
-	}
-
-	// Update user profile
-	static async updateProfile(userId: string, input: UpdateProfileInput) {
-		// Changed from number to string
-		const user = UserModel.findById(userId)
+	async getUserById(userId: string) {
+		const user = await userModel.findById(userId) // ← await + lowercase
 		if (!user) {
 			throw new Error("User not found")
 		}
 
-		// Prepare updates
-		const updates: Partial<User> = {}
-
-		if (input.first_name) updates.first_name = input.first_name
-		if (input.last_name) updates.last_name = input.last_name
-		if (input.phone !== undefined) updates.phone = input.phone
-
-		// Hash new password if provided
-		if (input.password) {
-			updates.password_hash = await bcrypt.hash(input.password, SALT_ROUNDS)
+		return {
+			first_name: user.firstName,
+			last_name: user.lastName,
+			email: user.email,
+			role: user.role,
+			phone: user.phone,
+			is_verified: user.isVerified ? 1 : 0,
+			created_at: user.createdAt.toISOString(),
 		}
-
-		// Update in database
-		const success = UserModel.update(userId, updates)
-		if (!success) {
-			throw new Error("Failed to update profile")
-		}
-
-		// Return updated user
-		const updatedUser = UserModel.findById(userId)
-		if (!updatedUser) {
-			throw new Error("Failed to retrieve updated user")
-		}
-
-		return UserModel.toPublic(updatedUser)
 	}
 
-	// Get all users (admin only)
-	static getAllUsers() {
-		const users = UserModel.findAll()
-		return users.map((user) => UserModel.toPublic(user))
+	async updateProfile(
+		userId: string,
+		updates: {
+			first_name?: string
+			last_name?: string
+			phone?: string
+		}
+	) {
+		// Find user first
+		const user = await userModel.findById(userId) // ← await + lowercase
+		if (!user) {
+			throw new Error("User not found")
+		}
+
+		// Convert snake_case to camelCase for Prisma
+		const prismaUpdates: any = {}
+		if (updates.first_name) prismaUpdates.firstName = updates.first_name
+		if (updates.last_name) prismaUpdates.lastName = updates.last_name
+		if (updates.phone) prismaUpdates.phone = updates.phone
+
+		// Update user
+		const updatedUser = await userModel.updateUser(userId, prismaUpdates) // ← await + lowercase
+
+		return {
+			first_name: updatedUser.firstName,
+			last_name: updatedUser.lastName,
+			email: updatedUser.email,
+			role: updatedUser.role,
+			phone: updatedUser.phone,
+			is_verified: updatedUser.isVerified ? 1 : 0,
+			created_at: updatedUser.createdAt.toISOString(),
+		}
+	}
+
+	async getAllUsers() {
+		const users = await userModel.getAllUsers()
+		return users.map((user) => ({
+			first_name: user.firstName,
+			last_name: user.lastName,
+			email: user.email,
+			role: user.role,
+			is_verified: user.isVerified ? 1 : 0,
+			created_at: user.createdAt.toISOString(),
+		}))
 	}
 }
+
+export default new AuthService()
