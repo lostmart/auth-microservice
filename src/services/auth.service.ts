@@ -1,7 +1,11 @@
 import userModel from "../models/user.model"
-import { hashPassword, comparePassword } from "../utils/password.util"
+import {
+	hashPassword,
+	comparePassword,
+	validatePassword,
+} from "../utils/password.util"
+import { validateEmail } from "../utils/validation.util"
 import { generateToken } from "../utils/jwt.util"
-
 
 export class AuthService {
 	async register(input: {
@@ -12,6 +16,17 @@ export class AuthService {
 		phone?: string
 		role?: string
 	}) {
+		// Validate email
+		if (!validateEmail(input.email)) {
+			throw new Error("Invalid email format")
+		}
+
+		// Validate password
+		const passwordValidation = validatePassword(input.password)
+		if (!passwordValidation.valid) {
+			throw new Error(passwordValidation.message)
+		}
+
 		// Check if user exists
 		const existingUser = await userModel.findByEmail(input.email) // ← await + lowercase
 		if (existingUser) {

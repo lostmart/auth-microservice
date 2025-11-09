@@ -1,4 +1,3 @@
-// src/utils/password.util.ts
 import argon2 from "argon2"
 
 export const validatePassword = (
