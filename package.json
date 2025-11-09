@@ -3,11 +3,10 @@
 	"version": "1.0.0",
 	"description": "",
 	"main": "index.js",
-	"type": "module",
 	"scripts": {
-		"test": "NODE_OPTIONS='--experimental-vm-modules' jest --coverage",
-		"test:watch": "NODE_OPTIONS='--experimental-vm-modules' jest --watch",
-		"dev": "nodemon --watch 'src/**/*.ts' --exec ts-node --esm src/index.ts",
+		"test": "jest --coverage",
+		"test:watch": "jest --watch",
+		"dev": "nodemon --watch 'src/**/*.ts' --exec ts-node src/index.ts",
 		"build": "tsc",
 		"start": "node dist/index.js"
 	},
