@@ -1,5 +1,5 @@
 import express from "express"
-
+import cors from "cors"
 import db from "./config/database"
 import { initDatabase } from "./config/initDatabase"
 import authRoutes from "./routes/auth.routes"
@@ -19,21 +19,24 @@ import {
 
 const app = express()
 
-// CORS Middleware
-app.use((req, res, next) => {
-	res.setHeader("Access-Control-Allow-Origin", "*")
-	res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
-	res.setHeader(
-		"Access-Control-Allow-Headers",
-		"Content-Type, Authorization, X-API-Key"
-	)
-	next()
-})
+// CORS Configuration
+const corsOptions = {
+	origin:
+		process.env.NODE_ENV === "production"
+			? process.env.FRONTEND_URL
+			: ["http://localhost:5173", "http://localhost:3000"],
+	methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+	allowedHeaders: ["Content-Type", "Authorization", "X-API-Key"],
+	credentials: true,
+	optionsSuccessStatus: 200,
+}
+
+app.use(cors(corsOptions))
 
 // Middleware
-app.use(express.json()) // Parse JSON bodies
-app.use(express.urlencoded({ extended: true })) // Parse URL-encoded bodies
-app.use(requestLogger) // Log all requests
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(requestLogger)
 
 // Routes
 app.use("/api/v1/auth", apiKeyValidator, authRoutes)
