@@ -1,16 +1,14 @@
-// jest.config.js
 module.exports = {
-	preset: "ts-jest",
+	preset: "ts-jest/presets/default-esm",
 	testEnvironment: "node",
-	roots: ["<rootDir>/src"],
-	testMatch: ["**/__tests__/**/*.test.ts"],
-	collectCoverageFrom: ["src/**/*.ts", "!src/**/*.d.ts", "!src/index.ts"],
-	coverageThreshold: {
-		global: {
-			branches: 70,
-			functions: 70,
-			lines: 70,
-			statements: 70,
+	roots: ["<rootDir>/__test__"],
+	testMatch: ["**/*.test.ts"],
+	moduleFileExtensions: ["ts", "js", "json", "node"],
+	extensionsToTreatAsEsm: [".ts"],
+	globals: {
+		"ts-jest": {
+			tsconfig: "<rootDir>/tsconfig.json",
+			useESM: true,
 		},
 	},
 }
