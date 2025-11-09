@@ -2,8 +2,9 @@
 
 Production-grade authentication microservice handling 100K+ MAU
 
-[![CI/CD](https://github.com/lostmart/auth-microservice/workflows/CI%2FCD/badge.svg)](https://github.com/lostmart/auth-microservice/actions)
+[![CI/CD Pipeline](https://github.com/lostmart/auth-microservice/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/lostmart/auth-microservice/actions)
 [![Coverage](https://codecov.io/gh/lostmart/auth-microservice/branch/main/graph/badge.svg)](https://codecov.io/gh/lostmart/auth-microservice)
+
 [![License](https://img.shields.io/github/license/lostmart/auth-microservice)](LICENSE)
 
 ## 📋 Table of Contents
