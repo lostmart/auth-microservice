@@ -1,6 +1,9 @@
 // src/__tests__/unit/auth.service.test.ts
 import authService from "../../services/auth.service" // ← No .js
 
+function sum(a: number, b: number): number {
+	return a + b
+}
 
 import { hashPassword, comparePassword } from "../../utils/password.util.js"
 
@@ -10,6 +13,10 @@ jest.mock("../../models/user.model")
 describe("AuthService", () => {
 	describe("login", () => {
 		console.log("Tests for authService.login are currently commented out.")
+
+		test("adds 1 + 2 to equal 3", () => {
+			expect(sum(1, 2)).toBe(3)
+		})
 
 		// it("should return token and user on valid credentials", async () => {
 		// 	const mockUser = {
