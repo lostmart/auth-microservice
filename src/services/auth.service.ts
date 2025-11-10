@@ -6,6 +6,7 @@ import {
 } from "../utils/password.util"
 import { validateEmail } from "../utils/validation.util"
 import { generateToken } from "../utils/jwt.util"
+import { UserPublic } from "../types/user.interface"
 
 export class AuthService {
 	async register(input: {
@@ -158,15 +159,16 @@ export class AuthService {
 		}
 	}
 
-	async getAllUsers() {
+	async getAllUsers(): Promise<UserPublic[]> {
 		const users = await userModel.getAllUsers()
 		return users.map((user) => ({
-			first_name: user.firstName,
-			last_name: user.lastName,
+			first_name: user.firstName, // ← snake_case
+			last_name: user.lastName, // ← snake_case
 			email: user.email,
 			role: user.role,
-			is_verified: user.isVerified ? 1 : 0,
-			created_at: user.createdAt.toISOString(),
+			// phone: user.phone,
+			is_verified: user.isVerified ? 1 : 0, // ← snake_case
+			created_at: user.createdAt.toISOString(), // ← snake_case
 		}))
 	}
 }

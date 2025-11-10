@@ -26,7 +26,7 @@ export interface UserPublic {
 	last_name: string
 	email: string
 	role: string
-	phone?: string
+	phone?: string | null
 	is_verified: number
 	created_at: string
 }
