@@ -161,15 +161,16 @@ export class AuthService {
 
 	async getAllUsers(): Promise<UserPublic[]> {
 		const users = await userModel.getAllUsers()
-		return users.map((user) => ({
-			first_name: user.firstName, // ← snake_case
-			last_name: user.lastName, // ← snake_case
-			email: user.email,
-			role: user.role,
-			// phone: user.phone,
-			is_verified: user.isVerified ? 1 : 0, // ← snake_case
-			created_at: user.createdAt.toISOString(), // ← snake_case
-		}))
+		return users.map(
+			(user): UserPublic => ({
+				first_name: user.firstName,
+				last_name: user.lastName,
+				email: user.email,
+				role: user.role,
+				is_verified: user.isVerified ? 1 : 0,
+				created_at: user.createdAt.toISOString(),
+			})
+		)
 	}
 }
 
