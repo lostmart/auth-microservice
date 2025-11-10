@@ -56,14 +56,12 @@ jobs:
           API_KEY: ${{ secrets.API_KEY }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           JWT_EXPIRES_IN: 1h
-        run: npm test
+        run: npm jest --coverage
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+      - name: Upload results to Codecov
+        uses: codecov/codecov-action@v5
         with:
-          file: ./coverage/coverage-final.json
-          flags: unittests
-          name: codecov-umbrella
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   build:
     needs: test
