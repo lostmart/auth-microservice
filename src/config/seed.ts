@@ -1,102 +1,74 @@
-import db from "./database"
-import bcrypt from "bcrypt"
-import { ulid } from "ulid"
+// src/config/seed.ts
+import { PrismaClient } from "@prisma/client"
+import { hashPassword } from "../utils/password.util"
 
-const SALT_ROUNDS = 10
+const prisma = new PrismaClient()
 
-interface SeedUser {
-	first_name: string
-	last_name: string
-	email: string
-	password: string
-	phone?: string
-	role: string
-	is_verified: number
-}
-
-const seedUsers: SeedUser[] = [
+const seedUsers = [
 	{
-		first_name: "Admin",
-		last_name: "User",
+		firstName: "Admin",
+		lastName: "User",
 		email: "admin@parisclassictours.fr",
-		password: "admin123",
-		phone: "+33 1 42 86 82 00",
+		passwordHash: "", // Will be set later
 		role: "admin",
-		is_verified: 1,
+		phone: "+33612345678",
 	},
 	{
-		first_name: "Pierre",
-		last_name: "Martin",
+		firstName: "Pierre",
+		lastName: "Martin",
 		email: "pierre.martin@parisclassictours.fr",
-		password: "driver123",
-		phone: "+33 6 12 34 56 78",
+		passwordHash: "",
 		role: "driver",
-		is_verified: 1,
+		phone: "+33623456789",
 	},
 	{
-		first_name: "Marie",
-		last_name: "Lefevre",
+		firstName: "Marie",
+		lastName: "Lefevre",
 		email: "marie.lefevre@email.fr",
-		password: "customer123",
-		phone: "+33 6 98 76 54 32",
+		passwordHash: "",
 		role: "customer",
-		is_verified: 1,
-	},
-	{
-		first_name: "Jean",
-		last_name: "Dupont",
-		email: "jean.dupont@email.fr",
-		password: "customer123",
-		role: "customer",
-		is_verified: 0,
-	},
-	{
-		first_name: "Sophie",
-		last_name: "Bernard",
-		email: "sophie.bernard@parisclassictours.fr",
-		password: "driver123",
-		phone: "+33 6 11 22 33 44",
-		role: "driver",
-		is_verified: 1,
+		phone: "+33634567890",
 	},
 ]
 
-export const seedDatabase = async () => {
-	console.log("Seeding database...")
+export async function seedDatabase() {
+	try {
+		console.log("🌱 Starting database seed...")
 
-	const existingUsers = db
-		.prepare("SELECT COUNT(*) as count FROM users")
-		.get() as {
-		count: number
+		// Hash passwords
+		seedUsers[0].passwordHash = await hashPassword("admin123")
+		seedUsers[1].passwordHash = await hashPassword("driver123")
+		seedUsers[2].passwordHash = await hashPassword("customer123")
+
+		// Check if users already exist
+		for (const userData of seedUsers) {
+			const existingUser = await prisma.user.findUnique({
+				where: { email: userData.email },
+			})
+
+			if (!existingUser) {
+				await prisma.user.create({
+					data: userData,
+				})
+				console.log(`✅ Created user: ${userData.email}`)
+			} else {
+				console.log(`⏭️  User already exists: ${userData.email}`)
+			}
+		}
+
+		console.log("✅ Database seed completed!")
+	} catch (error) {
+		console.error("❌ Error seeding database:", error)
+		throw error
+	} finally {
+		await prisma.$disconnect()
 	}
+}
 
-	if (existingUsers.count > 0) {
-		console.log("Database already seeded, skipping...")
-		return
-	}
-
-	const insertUser = db.prepare(`
-    INSERT INTO users (id, first_name, last_name, email, password_hash, phone, role, is_verified)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `)
-
-	for (const user of seedUsers) {
-		const id = ulid() // Generate ULID for each user
-		const hashedPassword = await bcrypt.hash(user.password, SALT_ROUNDS)
-
-		insertUser.run(
-			id,
-			user.first_name,
-			user.last_name,
-			user.email,
-			hashedPassword,
-			user.phone || null,
-			user.role,
-			user.is_verified
-		)
-
-		console.log(`✓ Seeded user: ${user.email} (${user.role}) - ID: ${id}`)
-	}
-
-	console.log("Database seeding completed!")
+// Run seed if called directly
+if (require.main === module) {
+	seedDatabase().catch((error) => {
+		console.error(error)
+		process.exit(1)
+	})
 }
