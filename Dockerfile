@@ -1,39 +1,48 @@
-# Use Node.js LTS (Long Term Support) version
-FROM node:20-alpine
+# Use Node.js LTS
+FROM node:18-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
+COPY prisma ./prisma/
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm ci
 
-# Copy TypeScript config
-COPY tsconfig.json ./
+# Generate Prisma Client
+RUN npx prisma generate
 
 # Copy source code
-COPY src ./src
-
-# Install TypeScript and build dependencies
-RUN npm install -D typescript @types/node @types/express
+COPY . .
 
 # Build TypeScript to JavaScript
 RUN npm run build
 
-# Remove dev dependencies and source files after build
-RUN npm prune --production && \
-    rm -rf src tsconfig.json
+# Production stage
+FROM node:18-alpine
 
-# Create data directory for SQLite
-RUN mkdir -p /app/data
+WORKDIR /app
 
-# Expose the port (should match your PORT env var)
+# Copy package files
+COPY package*.json ./
+COPY prisma ./prisma/
+
+# Install production dependencies only
+RUN npm ci --only=production
+
+# Generate Prisma Client in production image
+RUN npx prisma generate
+
+# Copy built files from builder
+COPY --from=builder /app/dist ./dist
+
+# Expose port
 EXPOSE 3000
 
-# Set environment to production
-ENV NODE_ENV=production
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3000/api/v1/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
-# Run the compiled application
-CMD ["node", "dist/index.js"]
+# Run migrations and start
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/index.js"]
