@@ -88,10 +88,19 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           API_KEY: ${{ secrets.API_KEY }}
         run: |
-          docker run -d -p 3000:3000 \
+          CONTAINER_ID=$(docker run -d -p 3000:3000 \
             -e DATABASE_URL="${DATABASE_URL}" \
             -e JWT_SECRET="${JWT_SECRET}" \
             -e API_KEY="${API_KEY}" \
-            auth-microservice:${{ github.sha }}
-          sleep 10
+            -e NODE_ENV="production" \
+            auth-microservice:${{ github.sha }})
+
+          echo "Container ID: $CONTAINER_ID"
+          echo "Waiting for container to start..."
+          sleep 15
+
+          echo "Container logs:"
+          docker logs $CONTAINER_ID
+
+          echo "Testing health endpoint..."
           curl --fail http://localhost:3000/api/v1/health || exit 1
