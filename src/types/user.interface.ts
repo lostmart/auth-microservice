@@ -1,3 +1,5 @@
+// src/types/user.interface.ts
+
 export interface User {
 	id: string
 	first_name: string
@@ -21,12 +23,13 @@ export interface CreateUserData {
 	role?: string
 }
 
+// ✅ Update this to match what getAllUsers() returns
 export interface UserPublic {
 	first_name: string
 	last_name: string
 	email: string
 	role: string
-	phone?: string | null
+	// phone?: string  // ← You commented this out in auth.service
 	is_verified: number
 	created_at: string
 }
