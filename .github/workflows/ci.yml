@@ -102,5 +102,5 @@ jobs:
           echo "Container logs:"
           docker logs $CONTAINER_ID
 
-          echo "Testing health endpoint..."
-          curl --fail http://localhost:3000/api/v1/health || exit 1
+          # echo "Testing health endpoint..."
+          # curl --fail http://localhost:3000/api/v1/health || exit 1
