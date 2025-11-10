@@ -10,23 +10,21 @@ describe("Auth API Integration Tests", () => {
 	const API_KEY = process.env.API_KEY || "test-api-key"
 
 	beforeAll(async () => {
-		// Run migrations to create tables
+		// Create database schema (db push instead of migrate)
 		try {
-			execSync("npx prisma migrate deploy", {
+			console.log("Setting up test database...")
+			execSync("npx prisma db push --force-reset --skip-generate", {
 				stdio: "inherit",
 				env: process.env,
 			})
+			console.log("✅ Test database ready")
 		} catch (error) {
-			console.error("Migration failed:", error)
+			console.error("❌ Database setup failed:", error)
+			throw error
 		}
-
-		// Clean database
-		await prisma.user.deleteMany()
 	})
 
 	afterAll(async () => {
-		// Clean up
-		await prisma.user.deleteMany()
 		await prisma.$disconnect()
 	})
 
