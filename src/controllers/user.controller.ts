@@ -1,14 +1,12 @@
-// src/controllers/user.controller.ts
 import { Request, Response } from "express"
-import authService from "../services/auth.service" // Import the instance (default export)
-
+import authService from "../services/auth.service"
 // Get all users (admin only)
 export const getAllUsers = async (
 	req: Request,
 	res: Response
 ): Promise<void> => {
 	try {
-		const users = await authService.getAllUsers() // Await the async method on the instance
+		const users = await authService.getAllUsers()
 
 		res.status(200).json({
 			count: users.length,

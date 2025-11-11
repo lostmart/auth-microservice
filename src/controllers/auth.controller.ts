@@ -1,7 +1,6 @@
-// src/controllers/auth.controller.ts
 import { Response } from "express"
 import authService from "../services/auth.service"
-import { AuthenticatedRequest } from "../types/express" // Adjusted import path (remove .d.ts extension for TypeScript resolution)
+import { AuthenticatedRequest } from "../types/express"
 
 export class AuthController {
 	async register(req: AuthenticatedRequest, res: Response) {
