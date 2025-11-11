@@ -5,9 +5,14 @@ Production-grade authentication microservice handling 100K+ MAU
 [![CI/CD Pipeline](https://github.com/lostmart/auth-microservice/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/lostmart/auth-microservice/actions)
 [![Coverage](https://codecov.io/gh/lostmart/auth-microservice/branch/main/graph/badge.svg)](https://codecov.io/gh/lostmart/auth-microservice)
 
+[![CI/CD](https://github.com/lostmart/auth-microservice/workflows/CI%2FCD/badge.svg)](https://github.com/lostmart/auth-microservice/actions)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
+[![License](https://img.shields.io/badge/license-ISC-blue.svg)](LICENSE)
+
 ## 📋 Table of Contents
 
-1. [Features](#features)
+1. Features
 2. Architecture
 3. Tech Stack
 4. Getting Started
@@ -19,159 +24,200 @@ Production-grade authentication microservice handling 100K+ MAU
 10. Environment Variables
 11. Design Decisions
 
+Production-grade authentication microservice built with Node.js, TypeScript, Express, and PostgreSQL.
+
+**🚀 Live API:** [https://your-railway-url.railway.app](https://your-railway-url.railway.app)
+
+---
+
 ## ✨ Features
 
-- JWT Authentication - Secure token-based authentication with configurable expiration
-- Role-Based Authorization - Fine-grained access control (admin, driver, customer roles)
-- API Key Protection - Service-to-service authentication for microservice architecture
-- Password Security - bcrypt hashing with configurable salt rounds
-- ULID Identifiers - Sortable, globally unique IDs instead of sequential integers
-- TypeScript - Full type safety and enhanced developer experience
-- RESTful API - Clean, intuitive endpoint structure
-- Request Logging - Comprehensive request/response logging
-- Health Checks - Monitoring-ready health endpoint
-- Docker Support - Production-ready containerization
-- Database Seeding - Pre-populated demo data for testing
+### Security
 
-## Folder Structure
+- 🔑 **JWT Authentication** - Secure token-based auth with configurable expiration
+- 🛡️ **Role-Based Access Control** - Fine-grained permissions (admin, driver, customer)
+- 🔐 **API Key Protection** - Service-to-service authentication
+- 🔒 **Argon2 Password Hashing** - Industry-standard password security
+- 🚦 **Rate Limiting** - Protection against brute-force attacks
 
-```
-src/
-  ├── index.ts          # Entry point (server startup)
-  ├── app.ts            # Express app configuration
-  ├── config/           # Configuration files
-  │   └── database.ts   # DB connection setup
-  ├── routes/           # API routes
-  │   └── auth.routes.ts
-  ├── controllers/      # Route handlers
-  │   └── auth.controller.ts
-  ├── services/         # Business logic
-  │   └── auth.service.ts
-  ├── models/           # Data models & DB schemas
-  │   └── user.model.ts
-  ├── middleware/       # Custom middleware
-  │   └── auth.middleware.ts
-  └── utils/            # Helper functions
-      └── jwt.util.ts
-```
+### Technology
 
-## Conceptual layers in a typical Express app:
+- ⚡ **TypeScript** - Full type safety and enhanced DX
+- 🐘 **PostgreSQL + Prisma** - Type-safe database operations
+- 🐳 **Docker Support** - Production-ready containerization
+- 🧪 **Testing Suite** - Unit and integration tests with Jest
+- 📊 **CI/CD Pipeline** - Automated testing and deployment
+- 🏥 **Health Checks** - Monitoring-ready endpoints
 
-1. **Controllers**: Handle incoming requests and send responses.
-2. **Services**: Reusable business logic and data access.
-3. **Routes**: Define API endpoints and map them to controllers.
-4. **Middleware**: Add functionality to the request/response cycle.
-5. **Models**: Define data models and DB schemas.
-6. **Utils**: Helper functions.
-7. **Config**: Configuration files.
-8. **Database**: DB connection setup.
-9. **Server**: Entry point (server startup).
-10. **Tests**: Unit and integration tests.
-11. **README.md**: Project documentation.
-12. **Dockerfile**: Containerization.
-13. **docker-compose.yml**: Container orchestration.
-14. **.env**: Environment variables.
-15. **.gitignore**: Ignored files.
-16. **tsconfig.json**: TypeScript configuration.
-17. **package.json**: Project metadata.
+### Developer Experience
 
-## Demo Credentials
+- 📝 **RESTful API** - Clean, intuitive endpoint structure
+- 📋 **Request Logging** - Comprehensive logging middleware
+- 🌱 **Database Seeding** - Pre-populated demo data
+- 🔄 **Hot Reload** - Fast development with nodemon
 
-This is a demo authentication microservice. You can test with these accounts:
+---
 
-**Admin Access:**
+## 🏗️ Architecture
 
-- Email: `admin@parisclassictours.fr`
-- Password: `admin123`
-
-**Driver Access:**
-
-- Email: `pierre.martin@parisclassictours.fr`
-- Password: `driver123`
-
-**Customer Access:**
-
-- Email: `marie.lefevre@email.fr`
-- Password: `customer123`
-
-> Note: This is a demonstration project. Passwords are intentionally simple for testing purposes.
-
-## Endpoints
-
-```text
-| Endpoint | Method | Description |
-| ------- | ------ | ----------- |
-| /api/v1/auth/register | POST | Create new user |
-| /api/v1/auth/login | POST | Login user |
-| /api/v1/health | GET | Health check |
-```
-
-- POST /api/v1/auth/register - Create new user
-- POST /api/v1/auth/login - Login user
-- GET /api/v1/health - Health check
-
-## ## Authentication Flow
-
-This is an authentication microservice designed for service-to-service communication.
-
-### API Key Authentication
-
-All endpoints require a valid API key in the request header:
+### Folder Structure
 
 ```
-X-API-Key: your-api-key-here
+auth-microservice/
+├── prisma/
+│   └── schema.prisma         # Database schema
+├── src/
+│   ├── __test__/            # Test files
+│   │   ├── integration/     # API integration tests
+│   │   ├── unit/            # Unit tests
+│   │   └── setup.ts         # Test configuration
+│   ├── config/              # Configuration
+│   │   ├── initDatabase.ts  # Database initialization
+│   │   └── seed.ts          # Database seeding
+│   ├── controllers/         # Request handlers
+│   │   ├── auth.controller.ts
+│   │   └── user.controller.ts
+│   ├── middleware/          # Custom middleware
+│   │   └── auth.middleware.ts
+│   ├── models/              # Data access layer
+│   │   └── user.model.ts
+│   ├── routes/              # API routes
+│   │   ├── auth.routes.ts
+│   │   └── user.routes.ts
+│   ├── services/            # Business logic
+│   │   └── auth.service.ts
+│   ├── types/               # TypeScript types
+│   │   └── user.interface.ts
+│   ├── utils/               # Helper functions
+│   │   ├── jwt.util.ts
+│   │   ├── password.util.ts
+│   │   └── validation.util.ts
+│   ├── app.ts               # Express app setup
+│   └── index.ts             # Server entry point
+├── .github/
+│   └── workflows/
+│       └── ci-cd.yml        # CI/CD pipeline
+├── Dockerfile               # Docker configuration
+├── docker-compose.yml       # Multi-container setup
+├── jest.config.js           # Test configuration
+├── tsconfig.json            # TypeScript config
+├── .env.example             # Environment template
+└── package.json             # Dependencies
 ```
 
-### Usage Example
+### Layered Architecture
+
+```
+┌─────────────────────────────────────────┐
+│          HTTP Request                    │
+└──────────────┬──────────────────────────┘
+               │
+               ▼
+┌─────────────────────────────────────────┐
+│     Middleware Layer                     │
+│  • API Key Validation                    │
+│  • JWT Authentication                    │
+│  • Rate Limiting                         │
+│  • Request Logging                       │
+└──────────────┬──────────────────────────┘
+               │
+               ▼
+┌─────────────────────────────────────────┐
+│     Controller Layer                     │
+│  • HTTP Request/Response                 │
+│  • Input Validation                      │
+│  • Error Handling                        │
+└──────────────┬──────────────────────────┘
+               │
+               ▼
+┌─────────────────────────────────────────┐
+│     Service Layer                        │
+│  • Business Logic                        │
+│  • Password Hashing                      │
+│  • JWT Generation                        │
+└──────────────┬──────────────────────────┘
+               │
+               ▼
+┌─────────────────────────────────────────┐
+│     Model Layer (Prisma)                 │
+│  • Database Operations                   │
+│  • Type-Safe Queries                     │
+└──────────────┬──────────────────────────┘
+               │
+               ▼
+┌─────────────────────────────────────────┐
+│     PostgreSQL Database                  │
+└─────────────────────────────────────────┘
+```
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js 18+
+- PostgreSQL 15+
+- Docker (optional)
+
+### Local Development
 
 ```bash
-# Login request
-curl -X POST http://localhost:3000/api/v1/auth/login \
-  -H "Content-Type: application/json" \
-  -H "X-API-Key: your-api-key-here" \
-  -d '{"email": "admin@parisclassictours.fr", "password": "admin123"}'
+# 1. Clone repository
+git clone https://github.com/lostmart/auth-microservice.git
+cd auth-microservice
+
+# 2. Install dependencies
+npm install
+
+# 3. Setup environment variables
+cp .env.example .env
+# Edit .env with your configuration
+
+# 4. Setup database
+npx prisma generate
+npx prisma migrate dev --name init
+
+# 5. Seed database (optional)
+npm run seed
+
+# 6. Start development server
+npm run dev
 ```
 
-### Design Rationale
+Server runs at: `http://localhost:3000`
 
-- API key protects the microservice from unauthorized access
-- Frontend/client services hold the API key
-- JWT tokens are issued to end users after login
-- Demonstrates proper microservice security patterns
+### Using Docker
 
-## Testing Considerations
+```bash
+# Start all services (app + PostgreSQL)
+docker-compose up
 
-When testing (Postman, curl, or frontend), you'll need to include **two headers**:
-
-```text
-X-API-Key: <your-api-key-from-env>
-Authorization: Bearer <jwt-token-after-login>
+# Or build and run manually
+docker build -t auth-microservice .
+docker run -p 3000:3000 \
+  -e DATABASE_URL="postgresql://..." \
+  -e JWT_SECRET="your-secret" \
+  -e API_KEY="your-api-key" \
+  auth-microservice
 ```
 
-## Layered architecture
+---
 
-```UML
-Request → Controller (HTTP) → Service (Logic) → Model (DB) → Database
+## 🔧 Configuration
+
+### Environment Variables
+
+```bash
+# .env
+NODE_ENV=development
+PORT=3000
+
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/auth"
+
+# Authentication
+JWT_SECRET=your-super-secret-jwt-key-here
+JWT_EXPIRES_IN=24h
+API_KEY=your-api-key-for-service-auth
 ```
-
-1. Controller - Handles HTTP (request/response)
-2. Service - Business logic (validation, orchestration)
-3. Model/Repository - Database operations only
-4. Database - SQLite connection
-
-## API Summary
-
-Public (API key only):
-
-POST /api/v1/auth/register - Register new user
-POST /api/v1/auth/login - Login user
-GET /api/v1/health - Health check (no auth)
-
-Protected (API key + JWT):
-
-GET /api/v1/auth/me - Get current user profile
-PUT /api/v1/auth/profile - Update own profile
-
-Admin only (API key + JWT + admin role):
-
-GET /api/v1/users - List all users
