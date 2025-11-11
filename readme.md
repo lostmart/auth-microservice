@@ -24,7 +24,7 @@ Production-grade authentication microservice handling 100K+ MAU
 
 Production-grade authentication microservice built with Node.js, TypeScript, Express, and PostgreSQL.
 
-**🚀 Live API:** [https://your-railway-url.railway.app](https://your-railway-url.railway.app)
+**🚀 Live API:** [https://auth-microservice-production-8b7f.up.railway.app](https://auth-microservice-production-8b7f.up.railway.app)
 
 ---
 
@@ -105,7 +105,7 @@ auth-microservice/
 
 ### Layered Architecture
 
-```
+```text
 ┌─────────────────────────────────────────┐
 │          HTTP Request                    │
 └──────────────┬──────────────────────────┘
