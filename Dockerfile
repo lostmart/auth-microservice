@@ -44,4 +44,5 @@ EXPOSE 3000
 #   CMD node -e "require('http').get('http://localhost:3000/api/v1/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
 # Just start the app (tables already exist on Railway)
-CMD ["node", "dist/index.js"]
+# Seed database on first run
+CMD ["sh", "-c", "npx ts-node src/config/seed.ts || true && node dist/index.js"]
